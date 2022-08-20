@@ -1,0 +1,26 @@
+{
+  "name": "knightmoves",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Giorgi-Tabatadze/knightMoves.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Giorgi-Tabatadze/knightMoves/issues"
+  },
+  "homepage": "https://github.com/Giorgi-Tabatadze/knightMoves#readme",
+  "devDependencies": {
+    "eslint": "^8.22.0",
+    "prettier": "^2.7.1",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
+  }
+}
