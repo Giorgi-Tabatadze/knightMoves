@@ -73,6 +73,33 @@ const knightMoves = function (from, to) {
     const listToReturn = addPossibleMoves(stack, possibleMoves);
     return listToReturn;
   };
+  let movesGraph = addPossibleMoves();
+
+  let knighthistory = [];
+
+  const getTree = function (
+    root,
+    to,
+    stack = [movesGraph[root.coordinates[1] * 8 + root.coordinates[0]]],
+    discoveredNodes = [],
+    history = [],
+  ) {
+    const graphIndex = stack[0].coordinates[1] * 8 + stack[0].coordinates[0];
+    discoveredNodes.push(movesGraph[graphIndex]);
+    movesGraph[graphIndex].childNodes.map((coordinate, index) => {
+      if (!discoveredNodes.includes(coordinate)) {
+        stack.push(coordinate);
+      } else movesGraph[graphIndex].childNodes.splice(index, 1);
+    });
+
+    stack.shift();
+
+    if (stack.length === 0) {
+      return movesGraph[root.coordinates[1] * 8 + root.coordinates[0]];
+    }
+    return getTree(root, to, stack, discoveredNodes, history);
+  };
+  const root = getTree(Node(from[0], from[1]), to);
 };
 
-knightMoves();
+knightMoves([0, 0], [5, 0]);
