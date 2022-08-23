@@ -1,3 +1,5 @@
+const { node } = require("webpack");
+
 const knightMoves = function (from, to) {
   const board = [];
 
@@ -75,31 +77,73 @@ const knightMoves = function (from, to) {
   };
   let movesGraph = addPossibleMoves();
 
-  let knighthistory = [];
-
   const getTree = function (
-    root,
+    from,
     to,
-    stack = [movesGraph[root.coordinates[1] * 8 + root.coordinates[0]]],
-    discoveredNodes = [],
-    history = [],
+    stack = [movesGraph[from[1] * 8 + from[0]]],
+    discoveredNodes = [movesGraph[from[1] * 8 + from[0]].coordinates],
   ) {
     const graphIndex = stack[0].coordinates[1] * 8 + stack[0].coordinates[0];
-    discoveredNodes.push(movesGraph[graphIndex]);
-    movesGraph[graphIndex].childNodes.map((coordinate, index) => {
-      if (!discoveredNodes.includes(coordinate)) {
+
+    const newChildnodes = [];
+    movesGraph[graphIndex].childNodes.forEach((coordinate) => {
+      if (
+        !discoveredNodes.some((disCor) => {
+          return (
+            disCor[0] === coordinate.coordinates[0] &&
+            disCor[1] === coordinate.coordinates[1]
+          );
+        })
+      ) {
+        discoveredNodes.push(coordinate.coordinates);
         stack.push(coordinate);
-      } else movesGraph[graphIndex].childNodes.splice(index, 1);
+        newChildnodes.push(coordinate);
+      }
     });
+
+    movesGraph[graphIndex].childNodes = [...newChildnodes];
 
     stack.shift();
 
     if (stack.length === 0) {
-      return movesGraph[root.coordinates[1] * 8 + root.coordinates[0]];
+      return;
     }
-    return getTree(root, to, stack, discoveredNodes, history);
+    return getTree(from, to, stack, discoveredNodes);
   };
-  const root = getTree(Node(from[0], from[1]), to);
+  getTree(from, to);
+  const root = movesGraph[from[1] * 8 + from[0]];
+
+  const depthSearch = function (currentNode, lookFor, history = []) {
+    const ourHistory = [...history];
+
+    if (
+      currentNode.coordinates[0] === lookFor[0] &&
+      currentNode.coordinates[1] === lookFor[1]
+    ) {
+      ourHistory.push(currentNode.coordinates);
+      return ourHistory;
+    }
+    if (currentNode.childNodes.length === 0) {
+      return false;
+    }
+    for (const childNode of currentNode.childNodes) {
+      const historyToReturn = depthSearch(childNode, lookFor, [
+        ...ourHistory,
+        currentNode.coordinates,
+      ]);
+      if (historyToReturn) {
+        return historyToReturn;
+      }
+    }
+  };
+  const movesMade = depthSearch(root, to);
+  let textToReturn = `You made ${movesMade.length - 1} moves`;
+  movesMade.forEach((move) => {
+    textToReturn += ` => [${move[0]}, ${move[1]}]`;
+  });
+  return textToReturn;
 };
 
-knightMoves([0, 0], [5, 0]);
+console.log(knightMoves([0, 0], [5, 0]));
+console.log(knightMoves([3, 7], [1, 6]));
+console.log(knightMoves([3, 7], [0, 0]));
